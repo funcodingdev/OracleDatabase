@@ -26,6 +26,7 @@ import com.hasee.oracledatabase.adapter.ListViewAdapter;
 import com.hasee.oracledatabase.fragment.AddFragment;
 import com.hasee.oracledatabase.fragment.DeleteFragment;
 import com.hasee.oracledatabase.fragment.HandleDialog;
+import com.hasee.oracledatabase.fragment.SelectSingleFragment;
 import com.hasee.oracledatabase.fragment.ShowMsgFragment;
 import com.hasee.oracledatabase.fragment.UpdateFragment;
 import com.hasee.oracledatabase.util.SocketUtil;
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private DeleteFragment deleteFragment;//删除页面
     private UpdateFragment updateFragment;//更新页面
     private HandleDialog handleDialog = new HandleDialog();//处理框
+    private SelectSingleFragment selectSingleFragment;//条件查询
+    private ShowMsgFragment showMsgFragment;//操作框
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +97,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case android.R.id.home:
                 drawerLayout.openDrawer(Gravity.LEFT);
                 break;
+            case R.id.refresh_menu:
+                selectAllData();
+                break;
             case R.id.clear_data://清空本地缓存
                 objectList.clear();
                 adapter.notifyDataSetChanged();
@@ -107,16 +113,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 deleteFragment = new DeleteFragment();
                 deleteFragment.show(getSupportFragmentManager(), "delete_dialog");
                 break;
-            case R.id.update_menu:
-//                updateFragment = new UpdateFragment();
-//                updateFragment.show(getSupportFragmentManager(), "update_dialog");
-                break;
             case R.id.select_menu_all:
                 JSONArray jsonArray = new JSONArray();
                 jsonArray.add(3);
                 sendMessageToServer(jsonArray.toString());
                 break;
             case R.id.select_menu_single:
+                selectSingleFragment = new SelectSingleFragment();
+                selectSingleFragment.show(getSupportFragmentManager(),"selectSingle_dialog");
 //                new Thread(new Runnable() {
 //                    @Override
 //                    public void run() {
@@ -292,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bundle.putSerializable("jsonItem",jsonObject);
         switch (flag){
             case 0:
-                ShowMsgFragment showMsgFragment = new ShowMsgFragment();
+                showMsgFragment = new ShowMsgFragment();
                 showMsgFragment.setArguments(bundle);
                 showMsgFragment.show(getSupportFragmentManager(),"showMsg_dialog");
                 break;
@@ -328,6 +332,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     if(updateFragment != null){
                         updateFragment.dismiss();
+                    }
+                    if(selectSingleFragment != null){
+                        selectSingleFragment.dismiss();
                     }
                     closeProgressDialog();
                     selectAllData();
